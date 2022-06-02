@@ -1,0 +1,46 @@
+name: 'Kerio VPN Action'
+description: 'Make a VPN connection'
+author: 'Trilogy'
+branding:
+  icon: 'archive'
+  color: 'gray-dark'
+inputs:
+  vpn-version:
+    description: 'Kerio vpn client version to download.'
+    required: true
+    default: 9.3.5-4367
+  vpn-username:
+    description: 'Service user.'
+    required: true
+  vpn-password:
+    description: 'Service user password.'
+    required: true
+  vpn-auth-code:
+    description: 'To make the 2SV, kerio vpn needs to browse a page with TOTP_CONTROL as a cookie.'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - run: |
+        die() {
+          echo "::Error! ::$1 empty"
+          exit 1
+        }
+        [[ "${{ inputs.vpn-version }}" = "" ]] && {
+          die "vpn-version"
+        }
+        [[ "${{ inputs.vpn-username }}" = "" ]] && {
+          die "vpn-username"
+        }
+        [[ "${{ inputs.vpn-password }}" = "" ]] && {
+          die "vpn-password"
+        }
+        [[ "${{ inputs.vpn-auth-code }}" = "" ]] && {
+          die "vpn-auth-code"
+        }
+        ${{ github.action_path }}/vpn.sh \
+          "${{ inputs.vpn-version }}" \
+          "${{ inputs.vpn-username }}" \
+          "${{ inputs.vpn-password }}" \
+          "${{ inputs.vpn-auth-code }}"
+      shell: bash
