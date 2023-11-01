@@ -22,7 +22,6 @@ waitForKvnet() {
     done
 }
 
-
 writeKerioConfigParam() {
   name=$1
   type=$2
