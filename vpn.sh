@@ -7,10 +7,21 @@ VPN_PASSWORD=$3
 VPN_AUTH_CODE=$4
 
 waitForKvnet() {
-    while ! ip a show kvnet up | grep inet  2>/dev/null; do
+    start_time=$(date +%s)
+    while ! ip a show kvnet up | grep inet 2>/dev/null; do
+        current_time=$(date +%s)
+        elapsed_time=$(($current_time - $start_time))
+        echo "Waiting for kvnet to start... Elapsed time: $elapsed_time seconds"
+        if [ $elapsed_time -ge 180 ]; then
+            echo "Error: kvnet did not start within 3 minutes"
+            echo "Details of kvnet interface:"
+            ip addr show kvnet
+            exit 1
+        fi
         sleep 1
     done
 }
+
 
 writeKerioConfigParam() {
   name=$1
@@ -38,6 +49,9 @@ wget http://cdn.kerio.com/dwn/control/control-${VPN_CLIENT_VERSION}/kerio-contro
 sudo debconf-set-selections kerio.params
 sudo dpkg -i /tmp/kerio-control-vpnclient-${VPN_CLIENT_VERSION}-linux-amd64.deb
 sudo /etc/init.d/kerio-kvc start
+
+echo "Kerio warm-up delay"
+sleep 2
 
 waitForKvnet
 
