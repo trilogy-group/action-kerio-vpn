@@ -80,7 +80,7 @@ done
 if [ $setup_attempts -gt $MAX_SETUP_ATTEMPTS ]; then
   echo "Error! VPN setup failed after $MAX_SETUP_ATTEMPTS attempts"
   echo "System logs:"
-  dmesg | tail -n 100
+  sudo dmesg | tail -n 100
   exit 1
 fi
 
