@@ -58,7 +58,7 @@ setupVpn() {
 }
 
 try_verify() {
-  curl -s --cookie "TOTP_CONTROL=${VPN_AUTH_CODE}" http://10.212.255.245:4080//nonauth/totpVerify.cs
+  curl -s --max-time $WAIT_KVN_TIMEOUT --cookie "TOTP_CONTROL=${VPN_AUTH_CODE}" http://10.212.255.245:4080//nonauth/totpVerify.cs
   curl_retval=$?
 }
 
