@@ -79,8 +79,13 @@ done
 
 if [ $setup_attempts -gt $MAX_SETUP_ATTEMPTS ]; then
   echo "Error! VPN setup failed after $MAX_SETUP_ATTEMPTS attempts"
-  echo "System logs:"
-  sudo dmesg | tail -n 100
+  echo "Kerio VPN Client logs:"
+  echo "init.log:"
+  sudo cat /var/log/kerio-kvc/init.log
+  echo "error.log:"
+  sudo cat /var/log/kerio-kvc/error.log
+  echo "debug.log:"
+  sudo cat /var/log/kerio-kvc/debug.log
   exit 1
 fi
 
