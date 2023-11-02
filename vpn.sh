@@ -45,6 +45,10 @@ setupVpn() {
 
   if [ ! -f "/tmp/kerio-control-vpnclient-${VPN_CLIENT_VERSION}-linux-amd64.deb" ]; then
     wget http://cdn.kerio.com/dwn/control/control-${VPN_CLIENT_VERSION}/kerio-control-vpnclient-${VPN_CLIENT_VERSION}-linux-amd64.deb
+  else
+    sudo /etc/init.d/kerio-kvc stop
+    echo "Kerio stop delay"
+    sleep 2
   fi
 
   sudo debconf-set-selections kerio.params
@@ -69,12 +73,14 @@ cd /tmp
 setup_attempts=1
 while [ $setup_attempts -le $MAX_SETUP_ATTEMPTS ]; do
   setupVpn && break
-  setup_attempts=$((setup_attempts + 1))
   echo "VPN setup failed. Attempt: $setup_attempts"
+  setup_attempts=$((setup_attempts + 1))
 done
 
 if [ $setup_attempts -gt $MAX_SETUP_ATTEMPTS ]; then
   echo "Error! VPN setup failed after $MAX_SETUP_ATTEMPTS attempts"
+  echo "System logs:"
+  dmesg | tail -n 100
   exit 1
 fi
 
