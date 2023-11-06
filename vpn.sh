@@ -7,6 +7,20 @@ VPN_CLIENT_VERSION=$1
 VPN_USERNAME=$2
 VPN_PASSWORD=$3
 VPN_AUTH_CODE=$4
+DESIRED_MTU=${5:-1500}  # Default to 1500 if not set
+MINIMAL_MTU=1200  # Define a minimal MTU value
+decrement_value=$(( (DESIRED_MTU - MINIMAL_MTU) / MAX_SETUP_ATTEMPTS ))  # Calculate decrement value
+
+setMTU() {
+    if [ $DESIRED_MTU -eq 1500 ]; then
+        echo "MTU is at the default value of 1500, no change needed."
+    elif [ $DESIRED_MTU -ge $MINIMAL_MTU ]; then
+        echo "Setting MTU for kvnet to $DESIRED_MTU"
+        sudo ip link set dev kvnet mtu $DESIRED_MTU
+    else
+        echo "MTU is already at or below minimal value of $MINIMAL_MTU"
+    fi
+}
 
 waitForKvnet() {
     start_time=$(date +%s)
@@ -58,6 +72,8 @@ setupVpn() {
   echo "Kerio warm-up delay"
   sleep 2
 
+  setMTU
+
   waitForKvnet
 }
 
@@ -74,6 +90,10 @@ setup_attempts=1
 while [ $setup_attempts -le $MAX_SETUP_ATTEMPTS ]; do
   setupVpn && break
   echo "VPN setup failed. Attempt: $setup_attempts"
+  DESIRED_MTU=$((DESIRED_MTU - decrement_value))  # Decrement the MTU
+  if [ $DESIRED_MTU -lt $MINIMAL_MTU ]; then
+    DESIRED_MTU=$MINIMAL_MTU  # Ensure we don't go below the minimal MTU
+  fi
   setup_attempts=$((setup_attempts + 1))
 done
 
