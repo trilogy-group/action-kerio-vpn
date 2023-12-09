@@ -20,16 +20,19 @@ inputs:
     required: true
   max-verify-attempt:
     description: 'Curl attempt count to verify the connection.'
-    required: true
+    required: false
     default: 5
+    type: number
   max-setup-attempt:
     description: 'Setup attempt count.'
-    required: true
+    required: false
     default: 5
+    type: number
   kvn-timeout:
     description: 'Kerio vpn client kvnet start timeout.'
-    required: true
+    required: false
     default: 30
+    type: number
 runs:
   using: 'composite'
   steps:
