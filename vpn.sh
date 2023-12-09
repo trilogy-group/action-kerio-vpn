@@ -1,12 +1,13 @@
 #!/usr/bin/env sh
 
-MAX_RETRY_COUNT=5
-MAX_SETUP_ATTEMPTS=3
-WAIT_KVN_TIMEOUT=20
 VPN_CLIENT_VERSION=$1
 VPN_USERNAME=$2
 VPN_PASSWORD=$3
 VPN_AUTH_CODE=$4
+MAX_CURL_ATTEMPT=$5
+MAX_SETUP_ATTEMPTS=$6
+WAIT_KVN_TIMEOUT=$7
+
 DESIRED_MTU=${5:-1500}  # Default to 1500 if not set
 MINIMAL_MTU=1200  # Define a minimal MTU value
 decrement_value=$(( (DESIRED_MTU - MINIMAL_MTU) / MAX_SETUP_ATTEMPTS ))  # Calculate decrement value
@@ -111,7 +112,7 @@ fi
 
 retry_count=1
 try_verify
-while [ $curl_retval -ne 0 -a $retry_count -lt $MAX_RETRY_COUNT ]; do
+while [ $curl_retval -ne 0 -a $retry_count -lt $MAX_CURL_ATTEMPT ]; do
   echo "curl failed with ${curl_retval}. retrying (${retry_count})..."
   retry_count=$((retry_count + 1))
   sleep 3
