@@ -18,6 +18,15 @@ inputs:
   vpn-auth-code:
     description: 'To make the 2SV, kerio vpn needs to browse a page with TOTP_CONTROL as a cookie.'
     required: true
+  max-verify-attempt:
+    description: 'Curl attempt count to verify the connection.'
+    default: 5
+  max-setup-attempt:
+    description: 'Setup attempt count.'
+    default: 5
+  kvn-timeout:
+    description: 'Kerio vpn client kvnet start timeout.'
+    default: 30
 runs:
   using: 'composite'
   steps:
@@ -38,9 +47,21 @@ runs:
         [[ "${{ inputs.vpn-auth-code }}" = "" ]] && {
           die "vpn-auth-code"
         }
+        [[ "${{ inputs.max-verify-attempt }}" = "" ]] && {
+          die "max-verify-attempt"
+        }
+        [[ "${{ inputs.max-setup-attempt }}" = "" ]] && {
+          die "max-setup-attempt"
+        }
+        [[ "${{ inputs.kvn-timeout }}" = "" ]] && {
+          die "kvn-timeout"
+        }
         ${{ github.action_path }}/vpn.sh \
           "${{ inputs.vpn-version }}" \
           "${{ inputs.vpn-username }}" \
           "${{ inputs.vpn-password }}" \
-          "${{ inputs.vpn-auth-code }}"
+          "${{ inputs.vpn-auth-code }}" \
+          "${{ inputs.max-verify-attempt }}" \
+          "${{ inputs.max-setup-attempt }}" \
+          "${{ inputs.kvn-timeout }}"
       shell: bash
