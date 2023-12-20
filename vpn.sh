@@ -8,7 +8,7 @@ MAX_CURL_ATTEMPT=$5
 MAX_SETUP_ATTEMPTS=$6
 WAIT_KVN_TIMEOUT=$7
 
-DESIRED_MTU=${5:-1500}  # Default to 1500 if not set
+DESIRED_MTU=${8:-1500}  # Default to 1500 if not set
 MINIMAL_MTU=1200  # Define a minimal MTU value
 decrement_value=$(( (DESIRED_MTU - MINIMAL_MTU) / MAX_SETUP_ATTEMPTS ))  # Calculate decrement value
 
